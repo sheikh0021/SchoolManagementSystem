@@ -16,6 +16,7 @@ import com.wassha.schoolmanagement.ui1.screen.auth.login.StudentLoginScreen
 import com.wassha.schoolmanagement.ui1.screen.auth.login.TeacherLoginScreen
 import com.wassha.schoolmanagement.ui1.screen.auth.register.StudentRegisterScreen
 import com.wassha.schoolmanagement.ui1.screen.auth.register.TeacherRegisterScreen
+import com.wassha.schoolmanagement.ui1.screen.dashboard.student.StudentClassesScreen
 import com.wassha.schoolmanagement.ui1.screen.dashboard.student.StudentDashboard
 import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherDashboard
 import com.wassha.schoolmanagement.ui1.screen.splash.SplashScreen
@@ -64,7 +65,7 @@ fun AppNavGraph(navController: NavHostController) {
      val student = navController.previousBackStackEntry?.savedStateHandle?.get<com.wassha.schoolmanagement.domain.model.Student>("student")
 
      if (student != null){
-         StudentDashboard(student = student)
+         StudentDashboard(student = student, navController = navController)
      }else {
          Text(
              text = "No Student data available",
@@ -94,6 +95,14 @@ fun AppNavGraph(navController: NavHostController) {
 
             }
         }
+
+        composable(
+            "student_classes"
+        ){
+            StudentClassesScreen(navController)
+        }
+
+
 
     }
 }
