@@ -20,6 +20,7 @@ import com.wassha.schoolmanagement.ui1.navigation.StudentBottomNavItem
 fun StudentDashboardScaffold(
     navController: NavController,
     currentRoute: String,
+    student: com.wassha.schoolmanagement.domain.model.Student? = null,
     topBarTitle: @Composable () -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ){
@@ -42,6 +43,10 @@ fun StudentDashboardScaffold(
                         selected = currentRoute == item.route,
                         onClick = {
                             if (currentRoute != item.route){
+                                // Pass student data to the next screen
+                                student?.let {
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("student", it)
+                                }
                                 navController.navigate(item.route){
                                     popUpTo("student_dashboard") {inclusive = false}
                                     launchSingleTop =  true
