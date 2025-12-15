@@ -46,6 +46,7 @@ fun StudentDashboard(navController: NavController, student: Student) {
     StudentDashboardScaffold(
         navController = navController,
         currentRoute = "student_dashboard",
+        student = student,
         topBarTitle = {
             Column {
                 Text(
