@@ -20,7 +20,10 @@ import com.wassha.schoolmanagement.ui1.screen.dashboard.student.StudentClassesSc
 import com.wassha.schoolmanagement.ui1.screen.dashboard.student.StudentDashboard
 import com.wassha.schoolmanagement.ui1.screen.dashboard.student.StudentReportsScreen
 import com.wassha.schoolmanagement.ui1.screen.dashboard.student.StudentSettingsScreen
+import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherClassesScreen
 import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherDashboard
+import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherReportsScreen
+import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherSettingsScreen
 import com.wassha.schoolmanagement.ui1.screen.splash.SplashScreen
 
 object Routes {
@@ -90,7 +93,7 @@ fun AppNavGraph(navController: NavHostController) {
             val teacher = navController.previousBackStackEntry?.savedStateHandle?.get<com.wassha.schoolmanagement.domain.model.Teacher>("teacher")
 
             if(teacher != null){
-                TeacherDashboard(teacher = teacher)
+                TeacherDashboard(teacher = teacher, navController = navController)
             }else {
                 Text(text = "No teacher data available",
                     modifier = Modifier.padding(24.dp))
@@ -120,7 +123,22 @@ fun AppNavGraph(navController: NavHostController) {
             }
         }
 
+        composable("teacher_classes") { backStackEntry ->
+            val teacher = navController.previousBackStackEntry?.savedStateHandle?.get<Teacher>("teacher")
+            TeacherClassesScreen(navController, teacher)
+        }
 
+        composable("teacher_reports") { backStackEntry ->
+            val teacher = navController.previousBackStackEntry?.savedStateHandle?.get<Teacher>("teacher")
+            TeacherReportsScreen(navController, teacher)
+        }
+
+        composable("teacher_settings") { backStackEntry ->
+            val teacher = navController.previousBackStackEntry?.savedStateHandle?.get<Teacher>("teacher")
+            TeacherSettingsScreen(navController, teacher)
+        }
 
     }
 }
+
+
