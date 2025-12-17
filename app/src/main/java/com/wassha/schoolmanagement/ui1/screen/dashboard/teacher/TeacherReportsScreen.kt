@@ -1,4 +1,4 @@
-package com.wassha.schoolmanagement.ui1.screen.dashboard.student
+package com.wassha.schoolmanagement.ui1.screen.dashboard.teacher
 
 import android.app.Application
 import androidx.compose.foundation.background
@@ -16,42 +16,41 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.wassha.schoolmanagement.domain.model.Student
-import com.wassha.schoolmanagement.ui1.viewmodel.StudentReportsViewModel
+import com.wassha.schoolmanagement.domain.model.Teacher
+import com.wassha.schoolmanagement.ui1.viewmodel.TeacherReportsViewModel
 
 /* ---------------------------------------------------
-   🎨 GREEN THEME (Reports = Growth / Success)
+   🎨 PURPLE THEME (Teacher Reports)
 --------------------------------------------------- */
 
-private val GreenGradient = Brush.linearGradient(
+private val TeacherGradient = Brush.linearGradient(
     colors = listOf(
-        Color(0xFF2ECC71),
-        Color(0xFF58D68D),
-        Color(0xFFA9DFBF)
+        Color(0xFF6A11CB),   // Purple
+        Color(0xFF8E2DE2),   // Violet
+        Color(0xFFB388FF)    // Soft glow
     ),
     start = Offset(0f, 0f),
     end = Offset(1000f, 600f)
 )
 
-private val GlowGreen = Color(0xFF2ECC71)
-private val SoftCardColor = Color(0xFFF1F8F4)
+private val GlowPurple = Color(0xFF8E2DE2)
+private val SoftCardColor = Color(0xFFF4F1F8)
 
 /* ---------------------------------------------------
-   📊 STUDENT REPORTS SCREEN
+   📊 TEACHER REPORTS SCREEN
 --------------------------------------------------- */
 
 @Composable
-fun StudentReportsScreen(
+fun TeacherReportsScreen(
     navController: NavController,
-    student: Student? = null,
-    viewModel: StudentReportsViewModel = viewModel(
+    teacher: Teacher? = null,
+    viewModel: TeacherReportsViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(
             LocalContext.current.applicationContext as Application
         )
@@ -61,19 +60,20 @@ fun StudentReportsScreen(
     val currentReport by viewModel.currentReport.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    LaunchedEffect(student?.studentId) {
-        student?.studentId?.let { studentId ->
-            viewModel.loadCurrentTermReport(studentId)
+    //load data when screen opens
+    LaunchedEffect(teacher?.teacherId) {
+        teacher?.teacherId?.let { teacherId ->
+            viewModel.loadCurrentTermReport(teacherId)
         }
     }
 
     // 👉 Dialog state
-    var selectedReportItem by remember { mutableStateOf<ReportItem?>(null) }
+    var selectedReportItem by remember { mutableStateOf<TeacherReportItem?>(null) }
 
-    StudentDashboardScaffold(
+    TeacherDashboardScaffold(
         navController = navController,
-        currentRoute = "student_reports",
-        student = student,
+        currentRoute = "teacher_reports",
+        teacher = teacher,
         topBarTitle = { Text("Reports") }
     ) { innerPadding ->
 
@@ -81,117 +81,107 @@ fun StudentReportsScreen(
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
-                CircularProgressIndicator(color = GlowGreen)
+            ) {
+                CircularProgressIndicator(color = GlowPurple)
             }
-        }else {
+        } else {
             currentReport?.let { report ->
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxSize().padding(innerPadding).padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    item { ReportCard(
-                        report = ReportItem(
-                            "Attendance",
-                            "${report.attendance}%",
-                            Icons.Default.CheckCircle,
-                            report.attendanceDescription,
-                        ),
-                        onClick = { selectedReportItem = ReportItem(
-                            "Attendance",
-                            "${report.attendance}%",
-                            Icons.Default.CheckCircle,
-                            report.attendanceDescription
-                        )}
-                    )
-                    }
-
                     item {
-                        ReportCard(
-                            report = ReportItem(
-                                "Grades",
-                                report.grades,
-                                Icons.Default.BarChart,
-                                report.gradesDescription
+                        TeacherReportCard(
+                            report = TeacherReportItem(
+                                "Attendance",
+                                "${report.attendance}%",
+                                Icons.Default.CheckCircle,
+                                report.attendanceDescription
                             ),
-                            onClick = {selectedReportItem = ReportItem(
-                                "Grades",
-                                report.grades,
-                                Icons.Default.BarChart,
-                                report.gradesDescription
-                            )}
+                            onClick = {
+                                selectedReportItem = TeacherReportItem(
+                                    "Attendance",
+                                    "${report.attendance}%",
+                                    Icons.Default.CheckCircle,
+                                    report.attendanceDescription
+                                )
+                            }
                         )
                     }
-
                     item {
-                        ReportCard(
-                            report = ReportItem(
+                        TeacherReportCard(
+                            report = TeacherReportItem(
                                 "Performance",
-                                report.performance,
+                                "${report.performance}%",
                                 Icons.Default.TrendingUp,
                                 report.performanceDescription
                             ),
-                            onClick = {selectedReportItem = ReportItem(
-                                "Performance",
-                                report.performance,
-                                Icons.Default.TrendingUp,
-                                report.performanceDescription
-                            )}
+                            onClick = {
+                                selectedReportItem = TeacherReportItem(
+                                    "Performance",
+                                    "${report.performance}%",
+                                    Icons.Default.TrendingUp,
+                                    report.performanceDescription
+                                )
+                            }
                         )
                     }
                     item {
-                        ReportCard(
-                            report = ReportItem(
-                                "Engagement",
-                                report.engagement,
-                                Icons.Default.Groups,
-                                report.engagementDescription
+                        TeacherReportCard(
+                            report = TeacherReportItem(
+                                "Class Completion",
+                                "${report.classCompletion}%",
+                                Icons.Default.Assessment,
+                                report.classCompletionDescription
                             ),
-                            onClick = {selectedReportItem = ReportItem(
-                                "Engagement",
-                                report.engagement,
-                                Icons.Default.Groups,
-                                report.engagementDescription
-                            )}
+                            onClick = {
+                                selectedReportItem = TeacherReportItem(
+                                    "Class Completion",
+                                    "${report.classCompletion}%",
+                                    Icons.Default.Assessment,
+                                    report.classCompletionDescription
+                                )
+                            }
                         )
                     }
+
+
                 }
             } ?: Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "No reports available for this term",
+                    Text(
+                        text = "No reports available for this term",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Gray
                     )
                 }
-
             }
-                    }
-
-                }
-
+        }
+    }
 
     //show dialog when report is selected
     selectedReportItem?.let {
-        ReportDetailDialog(
+        TeacherReportDetailDialog(
             report = it,
-            onDismiss = {selectedReportItem = null}
+            onDismiss = { selectedReportItem = null }
         )
     }
 }
+
+
+
+
 
 /* ---------------------------------------------------
    🧾 REPORT CARD
 --------------------------------------------------- */
 
 @Composable
-private fun ReportCard(
-    report: ReportItem,
+private fun TeacherReportCard(
+    report: TeacherReportItem,
     onClick: () -> Unit
 ) {
     Card(
@@ -201,8 +191,8 @@ private fun ReportCard(
             .shadow(
                 elevation = 12.dp,
                 shape = RoundedCornerShape(20.dp),
-                ambientColor = GlowGreen,
-                spotColor = GlowGreen
+                ambientColor = GlowPurple,
+                spotColor = GlowPurple
             ),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = SoftCardColor)
@@ -228,7 +218,7 @@ private fun ReportCard(
             Icon(
                 imageVector = report.icon,
                 contentDescription = null,
-                tint = GlowGreen,
+                tint = GlowPurple,
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -240,8 +230,8 @@ private fun ReportCard(
 --------------------------------------------------- */
 
 @Composable
-private fun ReportDetailDialog(
-    report: ReportItem,
+private fun TeacherReportDetailDialog(
+    report: TeacherReportItem,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -249,7 +239,7 @@ private fun ReportDetailDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    brush = GreenGradient,
+                    brush = TeacherGradient,
                     shape = RoundedCornerShape(24.dp)
                 )
                 .padding(24.dp)
@@ -284,7 +274,7 @@ private fun ReportDetailDialog(
                         containerColor = Color.White
                     )
                 ) {
-                    Text("Close", color = GlowGreen)
+                    Text("Close", color = GlowPurple)
                 }
             }
         }
@@ -295,9 +285,11 @@ private fun ReportDetailDialog(
    📦 DATA MODEL (UI ONLY)
 --------------------------------------------------- */
 
-private data class ReportItem(
+private data class TeacherReportItem(
     val title: String,
     val value: String,
-    val icon: ImageVector,
+    val icon: androidx.compose.ui.graphics.vector.ImageVector,
     val description: String
 )
+
+

@@ -1,4 +1,4 @@
-package com.wassha.schoolmanagement.ui1.screen.dashboard.student
+package com.wassha.schoolmanagement.ui1.screen.dashboard.teacher
 
 import android.app.Application
 import androidx.compose.foundation.background
@@ -17,88 +17,88 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
-import com.wassha.schoolmanagement.domain.model.Student
-import com.wassha.schoolmanagement.domain.model.StudentClass
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.wassha.schoolmanagement.data.local.entity.ClassEntity
-import com.wassha.schoolmanagement.ui1.viewmodel.StudentClassesViewModel
+import com.wassha.schoolmanagement.domain.model.Teacher
+import com.wassha.schoolmanagement.domain.model.TeacherClass
+import com.wassha.schoolmanagement.ui1.viewmodel.TeacherClassesViewModel
 
 /* ---------------------------------------------------
    🎨 DESIGN CONSTANTS (Same theme as dashboard)
 --------------------------------------------------- */
 
-private val OrangeGradient = Brush.linearGradient(
+private val TeacherGradient = Brush.linearGradient(
     colors = listOf(
-        Color(0xFFFF8A00),
-        Color(0xFFFFA726),
-        Color(0xFFFFCC80)
+        Color(0xFF6A11CB),   // Purple
+        Color(0xFF8E2DE2),   // Violet
+        Color(0xFFB388FF)    // Soft glow
     ),
     start = Offset(0f, 0f),
     end = Offset(1000f, 600f)
 )
 
-private val GlowOrange = Color(0xFFFFA726)
+private val GlowPurple = Color(0xFF8E2DE2)
 private val SoftCardColor = Color(0xFFF1F2F6)
 
 /* ---------------------------------------------------
-   🧑‍🎓 STUDENT CLASSES SCREEN
+   👩‍🏫 TEACHER CLASSES SCREEN
 --------------------------------------------------- */
 
 @Composable
-fun StudentClassesScreen(
+fun TeacherClassesScreen(
     navController: NavController,
-    student: Student? = null,
-    viewModel: StudentClassesViewModel = viewModel(
+    teacher: Teacher? = null,
+    viewModel: TeacherClassesViewModel = viewModel(
         factory = ViewModelProvider.AndroidViewModelFactory.getInstance(
             LocalContext.current.applicationContext as Application
         )
     )
-)
-{
+) {
 
+    //collect state with viewmodel
     val todayClasses by viewModel.todayClasses.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    //load data when studentId is available
-    LaunchedEffect(student?.studentId) {
-        student?.studentId?.let { studentId ->
-            viewModel.loadTodayClasses(studentId)
+    //load the data when screen opens up
+    LaunchedEffect(teacher?.teacherId) {
+        teacher?.teacherId?.let { teacherId ->
+            viewModel.loadTodayClasses(teacherId)
         }
     }
 
     // 🔹 Holds the selected class for dialog
     var selectedClass by remember { mutableStateOf<ClassEntity?>(null) }
 
-
-
-    StudentDashboardScaffold(
+    TeacherDashboardScaffold(
         navController = navController,
-        currentRoute = "student_classes",
-        student = student,
+        currentRoute = "teacher_classes",
+        teacher = teacher,
         topBarTitle = { Text("Today's Classes") }
     ) { innerPadding ->
+
         if (isLoading){
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ){
-                CircularProgressIndicator(color = GlowOrange)
+                CircularProgressIndicator(color = GlowPurple)
             }
-        }else if(todayClasses.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = "No classes scheduled for today",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray
-                )
+        } else if (todayClasses.isEmpty()){
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+             Text(text = "No classes scheduled for today",
+                 style = MaterialTheme.typography.bodyLarge,
+                 color = Color.Gray)
             }
-        }else {
+        } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -107,20 +107,18 @@ fun StudentClassesScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(todayClasses) { cls ->
-                    ClassCard(
+                    TeacherClassCard(
                         classEntity = cls,
                         onClick = { selectedClass = cls }
-                    )
+                        )
                 }
             }
         }
-
     }
-
 
     // 🔹 Show dialog when class is selected
     selectedClass?.let {
-        ClassDetailDialog(
+        TeacherClassDetailDialog(
             classEntity = it,
             onDismiss = { selectedClass = null }
         )
@@ -132,9 +130,9 @@ fun StudentClassesScreen(
 --------------------------------------------------- */
 
 @Composable
-private fun ClassCard(
-  classEntity: ClassEntity,
-  onClick: () -> Unit
+private fun TeacherClassCard(
+    classEntity: ClassEntity,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -143,8 +141,8 @@ private fun ClassCard(
             .shadow(
                 elevation = 12.dp,
                 shape = RoundedCornerShape(20.dp),
-                ambientColor = GlowOrange,
-                spotColor = GlowOrange
+                ambientColor = GlowPurple,
+                spotColor = GlowPurple
             ),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = SoftCardColor)
@@ -160,10 +158,11 @@ private fun ClassCard(
             Column {
                 Text(
                     text = classEntity.className,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleLarge
                 )
-                Text(text = "Teacher: ${classEntity.teacherName}",
-                    style = MaterialTheme.typography.bodyMedium,
+                Text(
+                    text = "Section: ${classEntity.section}",
+                    style = MaterialTheme.typography.bodyLarge,
                     color = Color.Gray
                 )
             }
@@ -172,23 +171,24 @@ private fun ClassCard(
                 Icon(
                     imageVector = Icons.Default.Schedule,
                     contentDescription = null,
-                    tint = GlowOrange
+                    tint = GlowPurple
                 )
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("${classEntity.startTime} - ${classEntity.endTime}")
-
-
+                Text(
+                    text = "${classEntity.startTime} - ${classEntity.endTime}",
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }
 }
 
 /* ---------------------------------------------------
-   💬 BEAUTIFUL CUSTOM DIALOG (NO AlertDialog ❌)
+   💬 BEAUTIFUL CUSTOM DIALOG
 --------------------------------------------------- */
 
 @Composable
-private fun ClassDetailDialog(
+private fun TeacherClassDetailDialog(
     classEntity: ClassEntity,
     onDismiss: () -> Unit
 ) {
@@ -198,7 +198,7 @@ private fun ClassDetailDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    brush = OrangeGradient,
+                    brush = TeacherGradient,
                     shape = RoundedCornerShape(24.dp)
                 )
                 .padding(24.dp)
@@ -214,7 +214,7 @@ private fun ClassDetailDialog(
                 )
 
                 Text(
-                    text = "Teacher: ${classEntity.teacherName}",
+                    text = "Section: ${classEntity.section}",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White.copy(alpha = 0.9f)
                 )
@@ -234,7 +234,7 @@ private fun ClassDetailDialog(
                         containerColor = Color.White
                     )
                 ) {
-                    Text("Close", color = GlowOrange)
+                    Text("Close", color = GlowPurple)
                 }
             }
         }
