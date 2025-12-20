@@ -3,6 +3,7 @@ package com.wassha.schoolmanagement.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "students")
 data class StudentEntity(
@@ -25,4 +26,4 @@ data class StudentEntity(
 
     @ColumnInfo(name = "password")
     val password: String      // Password for login
-)
+)  : Serializable

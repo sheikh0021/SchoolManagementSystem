@@ -24,6 +24,7 @@ import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherClassesSc
 import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherDashboard
 import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherReportsScreen
 import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherSettingsScreen
+import com.wassha.schoolmanagement.ui1.screen.dashboard.teacher.TeacherViewAllStudentsScreen
 import com.wassha.schoolmanagement.ui1.screen.splash.SplashScreen
 
 object Routes {
@@ -136,6 +137,11 @@ fun AppNavGraph(navController: NavHostController) {
         composable("teacher_settings") { backStackEntry ->
             val teacher = navController.previousBackStackEntry?.savedStateHandle?.get<Teacher>("teacher")
             TeacherSettingsScreen(navController, teacher)
+        }
+
+        composable("teacher_view_students") { backStackEntry ->
+            val teacher = navController.previousBackStackEntry?.savedStateHandle?.get<Teacher>("teacher")
+            TeacherViewAllStudentsScreen(navController, teacher)
         }
 
     }

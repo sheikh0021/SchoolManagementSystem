@@ -1,7 +1,7 @@
 package com.wassha.schoolmanagement.ui1.screen.dashboard.teacher
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -62,12 +62,17 @@ fun TeacherDashboard(navController: NavController, teacher: Teacher) {
             }
         }
     ) { innerPadding ->
-        TeacherDashboardContent(teacher, innerPadding)
+        TeacherDashboardContent(navController, teacher, innerPadding)
     }
+
 }
 
 @Composable
-private fun TeacherDashboardContent(teacher: Teacher, innerPadding: PaddingValues) {
+private fun TeacherDashboardContent(
+    navController: NavController,
+    teacher: Teacher,
+    innerPadding: PaddingValues
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -120,6 +125,36 @@ private fun TeacherDashboardContent(teacher: Teacher, innerPadding: PaddingValue
                         style = MaterialTheme.typography.titleLarge
                     )
                 }
+            }
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.currentBackStackEntry?.savedStateHandle?.set("teacher", teacher)
+                    navController.navigate("teacher_view_students")
+                },
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = SoftCardColor),
+            elevation = CardDefaults.cardElevation(8.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PeopleOutline,
+                    contentDescription = "View Students",
+                    tint = GlowPurple
+                )
+                Text(
+                    text = "View All Students",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         }
 
@@ -220,4 +255,6 @@ private fun TeacherInfoCard(
             }
         }
     }
+
+
 }
