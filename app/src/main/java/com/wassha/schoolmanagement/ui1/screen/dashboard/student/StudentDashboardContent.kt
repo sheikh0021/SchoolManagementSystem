@@ -1,6 +1,7 @@
 package com.wassha.schoolmanagement.ui1.screen.dashboard.student
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Badge
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,6 +34,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.wassha.schoolmanagement.domain.model.Student
 
 /* ---------------------------------------------------
@@ -56,7 +59,11 @@ private val SoftCardColor = Color(0xFFF1F2F6)
 --------------------------------------------------- */
 
 @Composable
-fun StudentDashboardContent(student: Student, scaffoldPadding: PaddingValues) {
+fun StudentDashboardContent(
+    student: Student,
+    scaffoldPadding: PaddingValues,
+    navController: NavController
+) {
 
     LazyColumn(
         modifier = Modifier
@@ -117,6 +124,41 @@ fun StudentDashboardContent(student: Student, scaffoldPadding: PaddingValues) {
                             style = MaterialTheme.typography.titleLarge
                         )
                     }
+                }
+            }
+        }
+
+        /* ---------------- VIEW TEACHERS CARD ---------------- */
+
+        item {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.currentBackStackEntry?.savedStateHandle?.set("student", student)
+                        navController.navigate("student_view_teachers")
+                    },
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = SoftCardColor),
+                elevation = CardDefaults.cardElevation(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "View Teachers",
+                        tint = GlowOrange,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Text(
+                        text = "View My Teachers",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
         }

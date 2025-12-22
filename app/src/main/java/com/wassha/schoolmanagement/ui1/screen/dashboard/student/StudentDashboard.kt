@@ -61,6 +61,6 @@ fun StudentDashboard(navController: NavController, student: Student) {
             }
         }
     ) { innerPadding ->
-        StudentDashboardContent(student, innerPadding)
+        StudentDashboardContent(student, innerPadding, navController)
     }
 }
