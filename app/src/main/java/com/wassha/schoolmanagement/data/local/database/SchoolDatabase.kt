@@ -9,17 +9,19 @@ import com.wassha.schoolmanagement.data.local.dao.StudentDao
 import com.wassha.schoolmanagement.data.local.dao.StudentReportDao
 import com.wassha.schoolmanagement.data.local.dao.TeacherDao
 import com.wassha.schoolmanagement.data.local.dao.TeacherReportDao
+import com.wassha.schoolmanagement.data.local.dao.TeacherStudentAssignmentDao
 import com.wassha.schoolmanagement.data.local.entity.ClassEntity
 import com.wassha.schoolmanagement.data.local.entity.StudentClassCrossRef
 import com.wassha.schoolmanagement.data.local.entity.StudentEntity
 import com.wassha.schoolmanagement.data.local.entity.StudentReportEntity
 import com.wassha.schoolmanagement.data.local.entity.TeacherEntity
 import com.wassha.schoolmanagement.data.local.entity.TeacherReportEntity
+import com.wassha.schoolmanagement.data.local.entity.TeacherStudentAssignmentEntity
 
 @Database(
     entities = [StudentEntity::class, TeacherEntity::class,
-        ClassEntity::class, StudentClassCrossRef::class, StudentReportEntity::class, TeacherReportEntity::class],
-    version = 4,
+        ClassEntity::class, StudentClassCrossRef::class, StudentReportEntity::class, TeacherReportEntity::class, TeacherStudentAssignmentEntity::class],
+    version = 5,
     exportSchema = false
 )
 abstract class SchoolDatabase : RoomDatabase() {
@@ -29,6 +31,7 @@ abstract class SchoolDatabase : RoomDatabase() {
     abstract fun classDao(): ClassDao
     abstract fun studentReportDao(): StudentReportDao
     abstract fun teacherReportDao() : TeacherReportDao
+    abstract fun teacherStudentAssignmentDao(): TeacherStudentAssignmentDao //this is added here
 
     companion object {
         @Volatile
